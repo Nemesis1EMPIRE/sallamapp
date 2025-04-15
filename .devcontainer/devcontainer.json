@@ -1,0 +1,16 @@
+{
+  "name": "Flutter Dev",
+  "image": "mcr.microsoft.com/devcontainers/dotnet:6.0",
+  "features": {
+    "ghcr.io/devcontainers/features/flutter:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Dart-Code.flutter",
+        "Dart-Code.dart"
+      ]
+    }
+  },
+  "postCreateCommand": "flutter doctor"
+}
