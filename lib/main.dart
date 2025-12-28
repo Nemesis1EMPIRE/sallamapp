@@ -2217,7 +2217,7 @@ class CreationFactureScreenState extends State<CreationFactureScreen> {
                       children: [
                         Expanded(
                           child: TextFormField(
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               labelText: 'Date d\'émission',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -2245,7 +2245,7 @@ class CreationFactureScreenState extends State<CreationFactureScreen> {
                         const SizedBox(width: 16),
                         Expanded(
                           child: TextFormField(
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               labelText: 'Date d\'échéance',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -2705,17 +2705,17 @@ class ParametresScreenState extends State<ParametresScreen> {
                   ),
                   const SizedBox(height: 16),
                   ListTile(
-                    leading: const Icon(Icons.info),
+                    leading: Icon(Icons.info, color: AppConfig.primaryColor),
                     title: const Text('Version'),
                     subtitle: Text(AppConfig.version),
                   ),
                   ListTile(
-                    leading: const Icon(Icons.code),
+                    leading: Icon(Icons.code, color: AppConfig.primaryColor),
                     title: const Text('Développeur'),
                     subtitle: const Text('Financia Pro Team'),
                   ),
                   ListTile(
-                    leading: const Icon(Icons.email),
+                    leading: Icon(Icons.email, color: AppConfig.primaryColor),
                     title: const Text('Support'),
                     subtitle: const Text('support@financiapro.com'),
                   ),
@@ -2739,22 +2739,24 @@ class ParametresScreenState extends State<ParametresScreen> {
     
     return TextFormField(
       controller: controller,
-      decoration: const InputDecoration(
-        labelText: 'Nom de l\'entreprise',
-        border: OutlineInputBorder(),
-        suffixIcon: Icon(Icons.save),
+      decoration: InputDecoration(
+        labelText: label,
+        border: const OutlineInputBorder(),
+        suffixIcon: IconButton(
+          icon: const Icon(Icons.save),
+          onPressed: () {
+            _sauvegarderParametre(key, controller.text);
+            final scaffoldContext = context;
+            if (scaffoldContext.mounted) {
+              ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+                const SnackBar(content: Text('Paramètre sauvegardé')),
+              );
+            }
+          },
+        ),
       ),
       maxLines: maxLines,
       keyboardType: keyboardType,
-      onChanged: (value) {
-        _sauvegarderParametre(key, value);
-        final scaffoldContext = context;
-        if (scaffoldContext.mounted) {
-          ScaffoldMessenger.of(scaffoldContext).showSnackBar(
-            const SnackBar(content: Text('Paramètre sauvegardé')),
-          );
-        }
-      },
     );
   }
 }
@@ -2903,21 +2905,21 @@ class MainScreenState extends State<MainScreen> {
             _selectedIndex = index;
           });
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
+            icon: const Icon(Icons.dashboard),
             label: 'Tableau de bord',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people),
+            icon: const Icon(Icons.people),
             label: 'Clients',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.receipt),
+            icon: const Icon(Icons.receipt),
             label: 'Facturation',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
+            icon: const Icon(Icons.settings),
             label: 'Paramètres',
           ),
         ],
