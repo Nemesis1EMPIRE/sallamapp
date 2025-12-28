@@ -20,7 +20,7 @@ dependencies:
   # PDF & Documents
   pdf: ^3.10.6
   printing: ^5.11.2
-  pdf_render: ^2.0.1
+  pdf_render: ^1.4.12
   open_file: ^3.3.3
   share_plus: ^7.2.1
   
