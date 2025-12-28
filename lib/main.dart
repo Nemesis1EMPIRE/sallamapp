@@ -4,15 +4,11 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'dart:convert';
-import 'dart:typed_data';
-import 'dart:math';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:intl/intl.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
-import 'package:printing/printing.dart';
-import 'package:share_plus/share_plus.dart';
 import 'package:open_file/open_file.dart';
 import 'package:file_picker/file_picker.dart';
 
@@ -910,13 +906,13 @@ class KpiCard extends StatelessWidget {
   final double? percentChange;
   
   const KpiCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.value,
     required this.icon,
     required this.color,
     this.percentChange,
-  }) : super(key: key);
+  });
   
   @override
   Widget build(BuildContext context) {
@@ -994,12 +990,12 @@ class FactureCard extends StatelessWidget {
   final VoidCallback? onDelete;
   
   const FactureCard({
-    Key? key,
+    super.key,
     required this.facture,
     required this.onTap,
     this.onEdit,
     this.onDelete,
-  }) : super(key: key);
+  });
   
   Color _getStatusColor(String status) {
     switch (status) {
@@ -1112,13 +1108,13 @@ class FactureCard extends StatelessWidget {
 // ====================== ÉCRANS PRINCIPAUX ======================
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+  const DashboardScreen({super.key});
   
   @override
-  _DashboardScreenState createState() => _DashboardScreenState();
+  DashboardScreenState createState() => DashboardScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class DashboardScreenState extends State<DashboardScreen> {
   final DatabaseManager _db = DatabaseManager();
   List<Facture> _factures = [];
   List<Client> _clients = [];
@@ -1325,7 +1321,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             // TODO: Implémenter la suppression
                           },
                         );
-                      }),
+                      }).toList(),
                   ],
                 ),
               ),
@@ -1361,15 +1357,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
   }
   
   void _showAjoutClientDialog() {
+    final nomController = TextEditingController();
+    final siretController = TextEditingController();
+    final adresseController = TextEditingController();
+    final emailController = TextEditingController();
+    final telephoneController = TextEditingController();
+    
     showDialog(
       context: context,
-      builder: (context) {
-        final nomController = TextEditingController();
-        final siretController = TextEditingController();
-        final adresseController = TextEditingController();
-        final emailController = TextEditingController();
-        final telephoneController = TextEditingController();
-        
+      builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Nouveau Client'),
           content: SingleChildScrollView(
@@ -1462,7 +1458,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) {
+      builder: (BuildContext context) {
         return SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -1579,13 +1575,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
 }
 
 class ClientsScreen extends StatefulWidget {
-  const ClientsScreen({Key? key}) : super(key: key);
+  const ClientsScreen({super.key});
   
   @override
-  _ClientsScreenState createState() => _ClientsScreenState();
+  ClientsScreenState createState() => ClientsScreenState();
 }
 
-class _ClientsScreenState extends State<ClientsScreen> {
+class ClientsScreenState extends State<ClientsScreen> {
   final DatabaseManager _db = DatabaseManager();
   List<Client> _clients = [];
   String _searchQuery = '';
@@ -1717,7 +1713,7 @@ class _ClientsScreenState extends State<ClientsScreen> {
         onPressed: () {
           showDialog(
             context: context,
-            builder: (context) {
+            builder: (BuildContext context) {
               final nomController = TextEditingController();
               final siretController = TextEditingController();
               final adresseController = TextEditingController();
@@ -1826,7 +1822,7 @@ class _ClientsScreenState extends State<ClientsScreen> {
     
     showDialog(
       context: context,
-      builder: (context) {
+      builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Modifier Client'),
           content: SingleChildScrollView(
@@ -1889,13 +1885,19 @@ class _ClientsScreenState extends State<ClientsScreen> {
                   return;
                 }
                 
-                client.nom = nomController.text;
-                client.siret = siretController.text.isEmpty ? null : siretController.text;
-                client.adresse = adresseController.text.isEmpty ? null : adresseController.text;
-                client.email = emailController.text.isEmpty ? null : emailController.text;
-                client.telephone = telephoneController.text.isEmpty ? null : telephoneController.text;
+                final updatedClient = Client(
+                  id: client.id,
+                  nom: nomController.text,
+                  siret: siretController.text.isEmpty ? null : siretController.text,
+                  adresse: adresseController.text.isEmpty ? null : adresseController.text,
+                  email: emailController.text.isEmpty ? null : emailController.text,
+                  telephone: telephoneController.text.isEmpty ? null : telephoneController.text,
+                  solde: client.solde,
+                  dateCreation: client.dateCreation,
+                  categorie: client.categorie,
+                );
                 
-                await _db.updateClient(client);
+                await _db.updateClient(updatedClient);
                 await _chargerClients();
                 
                 if (context.mounted) {
@@ -1916,7 +1918,7 @@ class _ClientsScreenState extends State<ClientsScreen> {
   void _showDeleteClientDialog(Client client) {
     showDialog(
       context: context,
-      builder: (context) {
+      builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Supprimer Client'),
           content: Text('Êtes-vous sûr de vouloir supprimer ${client.nom} ?'),
@@ -1950,16 +1952,16 @@ class _ClientsScreenState extends State<ClientsScreen> {
 }
 
 class CreationFactureScreen extends StatefulWidget {
-  const CreationFactureScreen({Key? key}) : super(key: key);
+  const CreationFactureScreen({super.key});
   
   @override
-  _CreationFactureScreenState createState() => _CreationFactureScreenState();
+  CreationFactureScreenState createState() => CreationFactureScreenState();
 }
 
-class _CreationFactureScreenState extends State<CreationFactureScreen> {
+class CreationFactureScreenState extends State<CreationFactureScreen> {
   final DatabaseManager _db = DatabaseManager();
   final List<LigneFacture> _lignes = [];
-  final List<Client> _clients = [];
+  List<Client> _clients = [];
   Client? _selectedClient;
   DateTime _dateEmission = DateTime.now();
   DateTime _dateEcheance = DateTime.now().add(const Duration(days: 30));
@@ -2089,11 +2091,18 @@ class _CreationFactureScreenState extends State<CreationFactureScreen> {
     }
     
     // Générer le PDF
-    facture.id = factureId;
-    facture.lignes = _lignes;
-    facture.client = _selectedClient;
+    final factureComplete = Facture(
+      id: factureId,
+      numero: numero,
+      clientId: _selectedClient!.id!,
+      dateEmission: _dateEmission,
+      dateEcheance: _dateEcheance,
+      notes: _notes,
+    );
+    factureComplete.lignes = _lignes;
+    factureComplete.client = _selectedClient;
     
-    final pdfFile = await PDFManager().genererFacturePDF(facture);
+    final pdfFile = await PDFManager().genererFacturePDF(factureComplete);
     
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -2394,7 +2403,7 @@ class _CreationFactureScreenState extends State<CreationFactureScreen> {
                             ),
                           ),
                         );
-                      }),
+                      }).toList(),
                     ],
                   ),
                 ),
@@ -2507,13 +2516,13 @@ class _CreationFactureScreenState extends State<CreationFactureScreen> {
 }
 
 class ParametresScreen extends StatefulWidget {
-  const ParametresScreen({Key? key}) : super(key: key);
+  const ParametresScreen({super.key});
   
   @override
-  _ParametresScreenState createState() => _ParametresScreenState();
+  ParametresScreenState createState() => ParametresScreenState();
 }
 
-class _ParametresScreenState extends State<ParametresScreen> {
+class ParametresScreenState extends State<ParametresScreen> {
   final DatabaseManager _db = DatabaseManager();
   final Map<String, String> _parametres = {};
   
@@ -2750,13 +2759,13 @@ class _ParametresScreenState extends State<ParametresScreen> {
 // ====================== APPLICATION PRINCIPALE ======================
 
 class FinanciaProApp extends StatefulWidget {
-  const FinanciaProApp({Key? key}) : super(key: key);
+  const FinanciaProApp({super.key});
   
   @override
-  _FinanciaProAppState createState() => _FinanciaProAppState();
+  FinanciaProAppState createState() => FinanciaProAppState();
 }
 
-class _FinanciaProAppState extends State<FinanciaProApp> {
+class FinanciaProAppState extends State<FinanciaProApp> {
   bool _initialized = false;
   
   @override
@@ -2772,7 +2781,7 @@ class _FinanciaProAppState extends State<FinanciaProApp> {
         _initialized = true;
       });
     } catch (e) {
-      print('Erreur d\'initialisation: $e');
+      debugPrint('Erreur d\'initialisation: $e');
       // TODO: Gérer l'erreur
     }
   }
@@ -2860,20 +2869,20 @@ class _FinanciaProAppState extends State<FinanciaProApp> {
 }
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  const MainScreen({super.key});
   
   @override
-  _MainScreenState createState() => _MainScreenState();
+  MainScreenState createState() => MainScreenState();
 }
 
-class _MainScreenState extends State<MainScreen> {
+class MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
   
-  static final List<Widget> _widgetOptions = <Widget>[
-    const DashboardScreen(),
-    const ClientsScreen(),
-    const CreationFactureScreen(),
-    const ParametresScreen(),
+  static final List<Widget> _widgetOptions = const <Widget>[
+    DashboardScreen(),
+    ClientsScreen(),
+    CreationFactureScreen(),
+    ParametresScreen(),
   ];
   
   @override
