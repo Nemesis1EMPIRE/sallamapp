@@ -1267,11 +1267,14 @@ class DashboardScreenState extends State<DashboardScreen> {
                           color: AppConfig.accentColor,
                           onPressed: () async {
                             final backupFile = await _db.creerSauvegarde();
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Sauvegarde créée: ${backupFile.path}'),
-                              ),
-                            );
+                            final scaffoldContext = context;
+                            if (scaffoldContext.mounted) {
+                              ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+                                SnackBar(
+                                  content: Text('Sauvegarde créée: ${backupFile.path}'),
+                                ),
+                              );
+                            }
                           },
                         ),
                       ],
@@ -1321,7 +1324,7 @@ class DashboardScreenState extends State<DashboardScreen> {
                             // TODO: Implémenter la suppression
                           },
                         );
-                      }).toList(),
+                      }),
                   ],
                 ),
               ),
@@ -1493,13 +1496,12 @@ class DashboardScreenState extends State<DashboardScreen> {
                   'Lignes de facture:',
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
-                ...facture.lignes.map((ligne) {
-                  return ListTile(
+                for (final ligne in facture.lignes)
+                  ListTile(
                     title: Text(ligne.description),
                     subtitle: Text('${ligne.quantite} x ${ligne.prixUnitaire} €'),
                     trailing: Text('${ligne.totalTTC.toStringAsFixed(2)} €'),
-                  );
-                }),
+                  ),
                 
                 const SizedBox(height: 24),
                 Row(
@@ -2215,7 +2217,7 @@ class CreationFactureScreenState extends State<CreationFactureScreen> {
                       children: [
                         Expanded(
                           child: TextFormField(
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'Date d\'émission',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -2243,7 +2245,7 @@ class CreationFactureScreenState extends State<CreationFactureScreen> {
                         const SizedBox(width: 16),
                         Expanded(
                           child: TextFormField(
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'Date d\'échéance',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -2293,7 +2295,7 @@ class CreationFactureScreenState extends State<CreationFactureScreen> {
                     const SizedBox(height: 12),
                     TextFormField(
                       controller: _descriptionController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Description',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -2306,7 +2308,7 @@ class CreationFactureScreenState extends State<CreationFactureScreen> {
                         Expanded(
                           child: TextFormField(
                             controller: _quantiteController,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'Quantité',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -2319,7 +2321,7 @@ class CreationFactureScreenState extends State<CreationFactureScreen> {
                         Expanded(
                           child: TextFormField(
                             controller: _prixController,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'Prix unitaire HT',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -2332,7 +2334,7 @@ class CreationFactureScreenState extends State<CreationFactureScreen> {
                         Expanded(
                           child: TextFormField(
                             controller: _tvaController,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'TVA %',
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
@@ -2376,34 +2378,30 @@ class CreationFactureScreenState extends State<CreationFactureScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      ..._lignes.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final ligne = entry.value;
-                        
-                        return Card(
+                      for (final entry in _lignes.asMap().entries)
+                        Card(
                           margin: const EdgeInsets.only(bottom: 8),
                           color: Colors.grey[50],
                           child: ListTile(
-                            title: Text(ligne.description),
+                            title: Text(entry.value.description),
                             subtitle: Text(
-                              '${ligne.quantite} x ${ligne.prixUnitaire.toStringAsFixed(2)} € (TVA ${ligne.tauxTVA}%)',
+                              '${entry.value.quantite} x ${entry.value.prixUnitaire.toStringAsFixed(2)} € (TVA ${entry.value.tauxTVA}%)',
                             ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  '${ligne.totalTTC.toStringAsFixed(2)} €',
+                                  '${entry.value.totalTTC.toStringAsFixed(2)} €',
                                   style: const TextStyle(fontWeight: FontWeight.bold),
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.delete, color: Colors.red),
-                                  onPressed: () => _supprimerLigne(index),
+                                  onPressed: () => _supprimerLigne(entry.key),
                                 ),
                               ],
                             ),
                           ),
-                        );
-                      }).toList(),
+                        ),
                     ],
                   ),
                 ),
@@ -2492,7 +2490,7 @@ class CreationFactureScreenState extends State<CreationFactureScreen> {
                     const SizedBox(height: 12),
                     TextFormField(
                       maxLines: 3,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Ajouter des notes ou conditions de paiement...',
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
@@ -2635,17 +2633,20 @@ class ParametresScreenState extends State<ParametresScreen> {
                   ElevatedButton.icon(
                     onPressed: () async {
                       final backupFile = await _db.creerSauvegarde();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Sauvegarde créée: ${backupFile.path}'),
-                          action: SnackBarAction(
-                            label: 'Ouvrir',
-                            onPressed: () async {
-                              await OpenFile.open(backupFile.path);
-                            },
+                      final scaffoldContext = context;
+                      if (scaffoldContext.mounted) {
+                        ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+                          SnackBar(
+                            content: Text('Sauvegarde créée: ${backupFile.path}'),
+                            action: SnackBarAction(
+                              label: 'Ouvrir',
+                              onPressed: () async {
+                                await OpenFile.open(backupFile.path);
+                              },
+                            ),
                           ),
-                        ),
-                      );
+                        );
+                      }
                     },
                     icon: const Icon(Icons.backup),
                     label: const Text('Créer une sauvegarde'),
@@ -2666,8 +2667,9 @@ class ParametresScreenState extends State<ParametresScreen> {
                         final file = File(result.files.single.path!);
                         await _db.restaurerSauvegarde(file);
                         
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
+                        final scaffoldContext = context;
+                        if (scaffoldContext.mounted) {
+                          ScaffoldMessenger.of(scaffoldContext).showSnackBar(
                             const SnackBar(content: Text('Sauvegarde restaurée avec succès')),
                           );
                           await _chargerParametres();
@@ -2737,21 +2739,22 @@ class ParametresScreenState extends State<ParametresScreen> {
     
     return TextFormField(
       controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        border: const OutlineInputBorder(),
-        suffixIcon: IconButton(
-          icon: const Icon(Icons.save),
-          onPressed: () {
-            _sauvegarderParametre(key, controller.text);
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Paramètre sauvegardé')),
-            );
-          },
-        ),
+      decoration: const InputDecoration(
+        labelText: 'Nom de l\'entreprise',
+        border: OutlineInputBorder(),
+        suffixIcon: Icon(Icons.save),
       ),
       maxLines: maxLines,
       keyboardType: keyboardType,
+      onChanged: (value) {
+        _sauvegarderParametre(key, value);
+        final scaffoldContext = context;
+        if (scaffoldContext.mounted) {
+          ScaffoldMessenger.of(scaffoldContext).showSnackBar(
+            const SnackBar(content: Text('Paramètre sauvegardé')),
+          );
+        }
+      },
     );
   }
 }
@@ -2800,7 +2803,7 @@ class FinanciaProAppState extends State<FinanciaProApp> {
                 const SizedBox(height: 20),
                 Text(
                   'Initialisation de Financia Pro...',
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -2844,11 +2847,11 @@ class FinanciaProAppState extends State<FinanciaProApp> {
             borderRadius: BorderRadius.circular(16),
           ),
         ),
-        inputDecorationTheme: InputDecorationTheme(
+        inputDecorationTheme: const InputDecorationTheme(
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          contentPadding: const EdgeInsets.all(16),
+          contentPadding: EdgeInsets.all(16),
         ),
       ),
       darkTheme: ThemeData.dark().copyWith(
@@ -2878,7 +2881,7 @@ class MainScreen extends StatefulWidget {
 class MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
   
-  static final List<Widget> _widgetOptions = const <Widget>[
+  static const List<Widget> _widgetOptions = <Widget>[
     DashboardScreen(),
     ClientsScreen(),
     CreationFactureScreen(),
