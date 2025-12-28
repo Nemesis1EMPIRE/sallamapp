@@ -28,8 +28,40 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  # Base de données
+  drift: ^2.13.0           # ORM SQLite
+  path_provider: ^2.1.1    # Gestion fichiers
+  path: ^1.8.3
+  
+  # PDF & Documents
+  pdf: ^3.10.6             # Génération PDF
+  printing: ^5.11.2        # Impression
+  pdf_render: ^2.0.1       # Prévisualisation
+  open_file: ^3.3.3        # Ouverture fichiers
+  share_plus: ^7.2.1       # Partage
+  
+  # UI & Utilitaires
+  get: ^4.6.5              # State management
+  intl: ^0.18.1            # Internationalisation
+  decimal: ^2.3.4          # Calculs précis
+  syncfusion_flutter_charts: ^23.2.6  # Graphiques
+  file_picker: ^6.1.1      # Sélection fichiers
+  flutter_secure_storage: ^9.0.2      # Sécurité
+  archive: ^3.3.6          # Compression
+  crypto: ^3.0.3           # Hashing
+  
+  # Gestion états avancée
+  flutter_bloc: ^8.1.3     # BLoC pattern
+  freezed: ^2.4.2          # Immutable models
+  injectable: ^2.1.0       # Dependency injection
+  
+  # Monitoring
+  sentry_flutter: ^7.15.0  # Error tracking
+  firebase_analytics: ^10.7.2  # Analytics (optionnel)
+  
   flutter:
     sdk: flutter
+    
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
