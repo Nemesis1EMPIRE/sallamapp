@@ -23,7 +23,7 @@ jobs:
       uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
-        flutter-version: '3.13.9'  # Version spécifique
+        flutter-version: '3.16.0'  # Version spécifique
       
     - name: Show Flutter version
       run: flutter --version
