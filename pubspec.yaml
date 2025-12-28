@@ -28,6 +28,9 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+
+  flutter:
+    sdk: flutter
   # Base de données
   drift: ^2.13.0           # ORM SQLite
   path_provider: ^2.1.1    # Gestion fichiers
@@ -59,9 +62,7 @@ dependencies:
   sentry_flutter: ^7.15.0  # Error tracking
   firebase_analytics: ^10.7.2  # Analytics (optionnel)
   
-  flutter:
-    sdk: flutter
-    
+  
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
