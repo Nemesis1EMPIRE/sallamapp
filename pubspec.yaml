@@ -21,7 +21,7 @@ dependencies:
   pdf: ^3.10.6
   printing: ^5.11.2
   pdf_render: ^1.4.12
-  open_file: ^3.5.0
+  open_file: ^3.3.2
   share_plus: ^7.2.1
   
   # UI & Utilitaires
